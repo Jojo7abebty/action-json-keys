@@ -4,6 +4,7 @@
   "description": "A GitHub action to check keys of json files",
   "main": "index.js",
   "scripts": {
+    "build": "ncc build src/main.ts --license licenses.txt",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

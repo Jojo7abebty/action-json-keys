@@ -7,10 +7,7 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v1
-    - run: flutter pub get
-    - name: Analyze Flutter
+    - name: Check json files
       uses: ValentinVignal/action-json-keys@v0.0
       with:
         matcher: 'json/**/*.json'
