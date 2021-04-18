@@ -1,0 +1,16 @@
+name: 'JSON Keys'
+description: 'A GitHub action to check keys of json files'
+author: 'Valentin Vignal'
+branding:
+  icon: 'check-circle'
+  color: 'gray-dark'
+inputs:
+  matcher:
+    description: 'minimatch expression'
+    default: '**/*.json'
+    required: false
+
+
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
