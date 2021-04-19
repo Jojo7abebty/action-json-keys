@@ -3,11 +3,11 @@ on: [pull_request]
 jobs:
   linter:
     runs-on: ubuntu-latest
-    name: Lint flutter code
+    name: Check JSON keys
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Check json files
-      uses: ValentinVignal/action-json-keys@v0.0
+      uses: ValentinVignal/action-json-keys@v0.1
       with:
         matcher: 'json/**/*.json'

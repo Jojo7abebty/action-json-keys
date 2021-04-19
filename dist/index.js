@@ -3805,13 +3805,79 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const glob = __importStar(__nccwpck_require__(878));
 const fs = __importStar(__nccwpck_require__(747));
+const core = __importStar(__nccwpck_require__(752));
 const ActionOptions_1 = __nccwpck_require__(813);
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const files = glob.sync(ActionOptions_1.actionOptions.matcher);
-        console.log('files\n', files);
-        console.log(fs.readdirSync('./'));
+        console.log('::group:: Checking json files...');
+        const results = files.map(checkJson);
+        for (const result of results) {
+            if (!result.success) {
+                if (!result.json) {
+                    core.setFailed(`${result.file} is not a json`);
+                }
+                if (!result.ordered) {
+                    core.setFailed(`${result.file} is not ordered`);
+                }
+            }
+        }
+        // const badFiles = results.filter((result) => !result.success).map((result) => result.file);
+        // if (badFiles.length) {
+        //   core.setFailed(`Some files are not properly formatted\n- ${badFiles.join('\n -')}\n`);
+        // }
+        console.log('::endgroup::');
     });
+}
+class Result {
+    constructor(params) {
+        var _a, _b;
+        this.file = params.file;
+        this.ordered = (_a = params.ordered) !== null && _a !== void 0 ? _a : true;
+        this.json = (_b = params.json) !== null && _b !== void 0 ? _b : true;
+    }
+    get success() {
+        return this.ordered && this.json;
+    }
+}
+function checkJson(filePath) {
+    const jsonString = fs.readFileSync(filePath, { encoding: 'utf-8' });
+    let json;
+    try {
+        json = JSON.parse(jsonString);
+    }
+    catch (error) {
+        console.error(`error parsing ${error}`);
+        return new Result({ file: filePath, json: false });
+    }
+    if (!isObject(json)) {
+        return new Result({ file: filePath, json: false });
+    }
+    const ordered = isOrdered(json);
+    return new Result({ file: filePath, ordered: ordered });
+}
+/**
+ * Whether the object has its keys ordered in alphabetical order
+ * @param object
+ * @returns
+ */
+function isOrdered(object) {
+    const keys = Object.keys(object);
+    for (let i = 0; i < keys.length - 1; i++) {
+        if (keys[i] > keys[i + 1]) {
+            return false;
+        }
+    }
+    return keys.every((key) => !isObject(object[key]) || isObject(object[key]));
+}
+/**
+ * Check whether the object is a typescript object
+ *
+ * @param object
+ * @returns
+ */
+function isObject(object) {
+    return !!object && typeof object === 'object' && object.constructor === Object;
 }
 main();
 
