@@ -8,6 +8,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Check json files
-      uses: ValentinVignal/action-json-keys@v0.1
+      uses: ValentinVignal/action-json-keys@v0.2
       with:
         matcher: 'json/**/*.json'

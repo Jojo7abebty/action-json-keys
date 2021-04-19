@@ -3812,34 +3812,42 @@ function main() {
         const files = glob.sync(ActionOptions_1.actionOptions.matcher);
         console.log('::group:: Checking json files...');
         const results = files.map(checkJson);
+        let success = true;
         for (const result of results) {
             if (!result.success) {
+                success = false;
                 if (!result.json) {
-                    core.setFailed(`${result.file} is not a json`);
+                    console.error(`${result.file} is not a json.`);
                 }
                 if (!result.ordered) {
-                    core.setFailed(`${result.file} is not ordered`);
+                    console.error(`${result.file} is not ordered.`);
+                }
+                if (!result.correctCase) {
+                    console.error(`${result.file} keys are not all in snake case.`);
                 }
             }
         }
-        // const badFiles = results.filter((result) => !result.success).map((result) => result.file);
-        // if (badFiles.length) {
-        //   core.setFailed(`Some files are not properly formatted\n- ${badFiles.join('\n -')}\n`);
-        // }
         console.log('::endgroup::');
+        if (!success) {
+            core.setFailed('Some json files are not properly formatted, see logs above for more information.');
+        }
     });
 }
 class Result {
     constructor(params) {
-        var _a, _b;
+        var _a, _b, _c;
         this.file = params.file;
         this.ordered = (_a = params.ordered) !== null && _a !== void 0 ? _a : true;
         this.json = (_b = params.json) !== null && _b !== void 0 ? _b : true;
+        this.correctCase = (_c = params.correctCase) !== null && _c !== void 0 ? _c : true;
     }
     get success() {
-        return this.ordered && this.json;
+        return this.ordered && this.json && this.correctCase;
     }
 }
+/**
+ * Check a json file
+ */
 function checkJson(filePath) {
     const jsonString = fs.readFileSync(filePath, { encoding: 'utf-8' });
     let json;
@@ -3854,7 +3862,8 @@ function checkJson(filePath) {
         return new Result({ file: filePath, json: false });
     }
     const ordered = isOrdered(json);
-    return new Result({ file: filePath, ordered: ordered });
+    const correctCase = isCorrectCase(json);
+    return new Result({ file: filePath, ordered: ordered, correctCase: correctCase });
 }
 /**
  * Whether the object has its keys ordered in alphabetical order
@@ -3870,6 +3879,17 @@ function isOrdered(object) {
     }
     return keys.every((key) => !isObject(object[key]) || isObject(object[key]));
 }
+function isCorrectCase(object) {
+    var _a;
+    const keys = Object.keys(object);
+    for (const key of keys) {
+        if (((_a = key.match(snakeCaseRegExp)) === null || _a === void 0 ? void 0 : _a.length) !== 1) {
+            return false;
+        }
+    }
+    return keys.every((key) => !isObject(object[key]) || isCorrectCase(object[key]));
+}
+const snakeCaseRegExp = /^([a-z]|_)*$/g;
 /**
  * Check whether the object is a typescript object
  *

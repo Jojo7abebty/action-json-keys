@@ -1,0 +1,8 @@
+{
+  "firstKey": 0,
+  "secondKey": {
+    "aKey": 2,
+    "anotherKey": 3
+  },
+  "thirdKey": 1
+}
