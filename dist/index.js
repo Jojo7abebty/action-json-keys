@@ -3810,11 +3810,16 @@ const ActionOptions_1 = __nccwpck_require__(813);
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const files = glob.sync(ActionOptions_1.actionOptions.matcher);
+        console.log('1');
         console.log('::group:: Checking json files...');
+        console.log('2');
         const results = files.map(checkJson);
         let success = true;
+        let i = 0;
         for (const result of results) {
+            console.log(`3 - ${i}`);
             if (!result.success) {
+                console.log(`4 - ${i}`);
                 success = false;
                 if (!result.json) {
                     console.error(`${result.file} is not a json.`);
@@ -3825,12 +3830,19 @@ function main() {
                 if (!result.correctCase) {
                     console.error(`${result.file} keys are not all in snake case.`);
                 }
+                console.log(`5 - ${i}`);
             }
+            console.log(`6 - ${i}`);
         }
+        console.log(`7`);
         console.log('::endgroup::');
+        console.log(`8`);
         if (!success) {
+            console.log('9');
             core.setFailed('Some json files are not properly formatted, see logs above for more information.');
+            console.log('10');
         }
+        console.log('11');
     });
 }
 class Result {
