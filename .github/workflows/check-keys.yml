@@ -1,0 +1,13 @@
+on: [pull_request]
+
+jobs:
+  linter:
+    runs-on: ubuntu-latest
+    name: Check JSON keys
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Check json files
+      uses: ValentinVignal/action-json-keys@v0.2
+      with:
+        matcher: 'json/**/*.json'
