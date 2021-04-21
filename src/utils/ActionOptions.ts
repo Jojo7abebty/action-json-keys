@@ -7,8 +7,8 @@ class ActionOptions {
   public readonly order: OrderChecker;
   public readonly keyFormat: KeyFormatMatcher;
   constructor() {
-    this.fileMatcher = core.getInput('matcher', {required: true});
-    this.order = new OrderChecker(core.getInput('reversed', {required: true}) as OrderOptions);
+    this.fileMatcher = core.getInput('file-matcher', {required: true});
+    this.order = new OrderChecker(core.getInput('order', {required: true}) as OrderOptions);
     this.keyFormat = new KeyFormatMatcher(core.getInput('key-format', {required: true}));
   }
 }

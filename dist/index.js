@@ -3843,7 +3843,7 @@ exports.isCorrectCase = void 0;
 const ActionOptions_1 = __nccwpck_require__(813);
 const jsonSearch_1 = __nccwpck_require__(453);
 function isCorrectCase(object) {
-    return jsonSearch_1.jsonSearch(object, (keys) => keys.every(ActionOptions_1.actionOptions.keyFormat.isCorrectCase));
+    return jsonSearch_1.jsonSearch(object, (keys) => keys.every((key) => ActionOptions_1.actionOptions.keyFormat.isCorrectCase(key)));
 }
 exports.isCorrectCase = isCorrectCase;
 
@@ -3988,7 +3988,7 @@ const jsonSearch_1 = __nccwpck_require__(453);
 function isOrdered(object) {
     return jsonSearch_1.jsonSearch(object, (keys) => {
         for (let index = 0; index < keys.length - 1; index++) {
-            if (ActionOptions_1.actionOptions.order.checker(keys[index], keys[index + 1])) {
+            if (!ActionOptions_1.actionOptions.order.checker(keys[index], keys[index + 1])) {
                 return false;
             }
         }
@@ -4031,8 +4031,8 @@ const KeyFormatMatcher_1 = __nccwpck_require__(819);
 const OrderChecker_1 = __nccwpck_require__(1);
 class ActionOptions {
     constructor() {
-        this.fileMatcher = core.getInput('matcher', { required: true });
-        this.order = new OrderChecker_1.OrderChecker(core.getInput('reversed', { required: true }));
+        this.fileMatcher = core.getInput('file-matcher', { required: true });
+        this.order = new OrderChecker_1.OrderChecker(core.getInput('order', { required: true }));
         this.keyFormat = new KeyFormatMatcher_1.KeyFormatMatcher(core.getInput('key-format', { required: true }));
     }
 }
