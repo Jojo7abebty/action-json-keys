@@ -10,4 +10,4 @@ jobs:
     - name: Check json files
       uses: ValentinVignal/action-json-keys@v0.2
       with:
-        matcher: 'json/**/*.json'
+        file-matcher: 'json/**/*.json'
