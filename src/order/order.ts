@@ -1,4 +1,5 @@
-import { Json } from "../utils/jsonSearch";
+import { actionOptions } from "../utils/ActionOptions";
+import { Json, jsonSearch } from "../utils/jsonSearch";
 import { isObject } from "../utils/utils";
 
 /**
@@ -7,11 +8,15 @@ import { isObject } from "../utils/utils";
  * @returns 
  */
 export function isOrdered(object: Json): boolean {
-  const keys = Object.keys(object);
-  for (let i = 0; i < keys.length - 1; i++) {
-    if (keys[i] > keys[i+1]) {
-      return false;
+  return jsonSearch(
+    object,
+    (keys: string[]): boolean => {
+      for (let index = 0; index < keys.length - 1; index++) {
+        if (actionOptions.order.checker(keys[index], keys[index + 1])) {
+          return false;
+        }
+      }
+      return true;
     }
-  }
-  return keys.every((key) => !isObject(object[key]) || isObject(object[key]));
+  );
 }
