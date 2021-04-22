@@ -1,0 +1,8 @@
+{
+  "first-key": 0,
+  "second-key": {
+    "a-key": 2,
+    "another-key": 3
+  },
+  "third-key": 1
+}

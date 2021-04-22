@@ -1,0 +1,9 @@
+
+{
+  "FIRST1KEY": 0,
+  "SECOND2KEY": {
+    "0AKEY": 2,
+    "1ANOTHERKEY": 3
+  },
+  "THIRD3KEY": 1
+}
