@@ -5,9 +5,17 @@ branding:
   icon: 'check-circle'
   color: 'gray-dark'
 inputs:
-  matcher:
-    description: 'minimatch expression'
+  file-matcher:
+    description: 'Minimatch expression of the json files to check.'
     default: '**/*.json'
+    required: false
+  order:
+    description: 'The alphabetical key order. Options: `asc`, `desc`. Default: `asc`.'
+    default: 'asc'
+    required: false
+  key-format:
+    description: 'Format of the keys. Options: `snake_case`, `camelCase`, `PascalCase`, `kebab-case` or custom regexp. Default: `snake_case`.'
+    default: 'snake_case'
     required: false
 
 

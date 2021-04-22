@@ -3769,6 +3769,87 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 481:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Result = void 0;
+class Result {
+    constructor(params) {
+        var _a, _b, _c;
+        this.file = params.file;
+        this.ordered = (_a = params.ordered) !== null && _a !== void 0 ? _a : true;
+        this.json = (_b = params.json) !== null && _b !== void 0 ? _b : true;
+        this.correctCase = (_c = params.correctCase) !== null && _c !== void 0 ? _c : true;
+    }
+    get success() {
+        return this.ordered && this.json && this.correctCase;
+    }
+}
+exports.Result = Result;
+
+
+/***/ }),
+
+/***/ 819:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.KeyFormatMatcher = void 0;
+class KeyFormatMatcher {
+    constructor(input) {
+        switch (input) {
+            case 'snake_case':
+                this.regExp = KeyFormatMatcher.snakeCase;
+                break;
+            case 'camelCase':
+                this.regExp = KeyFormatMatcher.camelCase;
+                break;
+            case 'PascalCase':
+                this.regExp = KeyFormatMatcher.pascalCase;
+                break;
+            case 'kebab-case':
+                this.regExp = KeyFormatMatcher.kebabCase;
+            default:
+                this.regExp = new RegExp(input);
+                break;
+        }
+    }
+    isCorrectCase(key) {
+        var _a;
+        return ((_a = key.match(this.regExp)) === null || _a === void 0 ? void 0 : _a.length) === 1;
+    }
+}
+exports.KeyFormatMatcher = KeyFormatMatcher;
+KeyFormatMatcher.snakeCase = /^([a-z0-9_])*$/g;
+KeyFormatMatcher.camelCase = /^([a-z0-9])([a-zA-Z0-9])*$/g;
+KeyFormatMatcher.pascalCase = /^([A-Z0-9])([a-zA-Z0-9])*$/g;
+KeyFormatMatcher.kebabCase = /^([a-z0-9-])*$/g;
+
+
+/***/ }),
+
+/***/ 568:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.isCorrectCase = void 0;
+const ActionOptions_1 = __nccwpck_require__(813);
+const jsonSearch_1 = __nccwpck_require__(453);
+function isCorrectCase(object) {
+    return jsonSearch_1.jsonSearch(object, (keys) => keys.every((key) => ActionOptions_1.actionOptions.keyFormat.isCorrectCase(key)));
+}
+exports.isCorrectCase = isCorrectCase;
+
+
+/***/ }),
+
 /***/ 921:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -3807,9 +3888,13 @@ const glob = __importStar(__nccwpck_require__(878));
 const fs = __importStar(__nccwpck_require__(747));
 const core = __importStar(__nccwpck_require__(752));
 const ActionOptions_1 = __nccwpck_require__(813);
+const Result_1 = __nccwpck_require__(481);
+const utils_1 = __nccwpck_require__(746);
+const format_1 = __nccwpck_require__(568);
+const order_1 = __nccwpck_require__(927);
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const files = glob.sync(ActionOptions_1.actionOptions.matcher);
+        const files = glob.sync(ActionOptions_1.actionOptions.fileMatcher);
         console.log('::group:: Checking json files...');
         const results = files.map(checkJson);
         let success = true;
@@ -3833,18 +3918,6 @@ function main() {
         }
     });
 }
-class Result {
-    constructor(params) {
-        var _a, _b, _c;
-        this.file = params.file;
-        this.ordered = (_a = params.ordered) !== null && _a !== void 0 ? _a : true;
-        this.json = (_b = params.json) !== null && _b !== void 0 ? _b : true;
-        this.correctCase = (_c = params.correctCase) !== null && _c !== void 0 ? _c : true;
-    }
-    get success() {
-        return this.ordered && this.json && this.correctCase;
-    }
-}
 /**
  * Check a json file
  */
@@ -3856,50 +3929,73 @@ function checkJson(filePath) {
     }
     catch (error) {
         console.error(`error parsing ${error}`);
-        return new Result({ file: filePath, json: false });
+        return new Result_1.Result({ file: filePath, json: false });
     }
-    if (!isObject(json)) {
-        return new Result({ file: filePath, json: false });
+    if (!utils_1.isObject(json)) {
+        return new Result_1.Result({ file: filePath, json: false });
     }
-    const ordered = isOrdered(json);
-    const correctCase = isCorrectCase(json);
-    return new Result({ file: filePath, ordered: ordered, correctCase: correctCase });
+    const ordered = order_1.isOrdered(json);
+    const correctCase = format_1.isCorrectCase(json);
+    return new Result_1.Result({ file: filePath, ordered: ordered, correctCase: correctCase });
 }
+main();
+
+
+/***/ }),
+
+/***/ 1:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OrderChecker = void 0;
+class OrderChecker {
+    constructor(input) {
+        if (input === 'asc') {
+            this.checker = OrderChecker.asc;
+        }
+        else {
+            this.checker = OrderChecker.desc;
+        }
+    }
+    static asc(key1, key2) {
+        return key1 <= key2;
+    }
+    static desc(key1, key2) {
+        return key1 >= key2;
+    }
+}
+exports.OrderChecker = OrderChecker;
+
+
+/***/ }),
+
+/***/ 927:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.isOrdered = void 0;
+const ActionOptions_1 = __nccwpck_require__(813);
+const jsonSearch_1 = __nccwpck_require__(453);
 /**
  * Whether the object has its keys ordered in alphabetical order
  * @param object
  * @returns
  */
 function isOrdered(object) {
-    const keys = Object.keys(object);
-    for (let i = 0; i < keys.length - 1; i++) {
-        if (keys[i] > keys[i + 1]) {
-            return false;
+    return jsonSearch_1.jsonSearch(object, (keys) => {
+        for (let index = 0; index < keys.length - 1; index++) {
+            if (!ActionOptions_1.actionOptions.order.checker(keys[index], keys[index + 1])) {
+                return false;
+            }
         }
-    }
-    return keys.every((key) => !isObject(object[key]) || isObject(object[key]));
+        return true;
+    });
 }
-function isCorrectCase(object) {
-    var _a;
-    const keys = Object.keys(object);
-    for (const key of keys) {
-        if (((_a = key.match(snakeCaseRegExp)) === null || _a === void 0 ? void 0 : _a.length) !== 1) {
-            return false;
-        }
-    }
-    return keys.every((key) => !isObject(object[key]) || isCorrectCase(object[key]));
-}
-const snakeCaseRegExp = /^([a-z]|_)*$/g;
-/**
- * Check whether the object is a typescript object
- *
- * @param object
- * @returns
- */
-function isObject(object) {
-    return !!object && typeof object === 'object' && object.constructor === Object;
-}
-main();
+exports.isOrdered = isOrdered;
 
 
 /***/ }),
@@ -3931,12 +4027,63 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.actionOptions = void 0;
 const core = __importStar(__nccwpck_require__(752));
+const KeyFormatMatcher_1 = __nccwpck_require__(819);
+const OrderChecker_1 = __nccwpck_require__(1);
 class ActionOptions {
     constructor() {
-        this.matcher = core.getInput('matcher', { required: true });
+        this.fileMatcher = core.getInput('file-matcher', { required: true });
+        this.order = new OrderChecker_1.OrderChecker(core.getInput('order', { required: true }));
+        this.keyFormat = new KeyFormatMatcher_1.KeyFormatMatcher(core.getInput('key-format', { required: true }));
     }
 }
 exports.actionOptions = new ActionOptions();
+
+
+/***/ }),
+
+/***/ 453:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.jsonSearch = void 0;
+const utils_1 = __nccwpck_require__(746);
+function jsonSearch(json, callback) {
+    if (utils_1.isObject(json)) {
+        const keys = Object.keys(json);
+        const isOk = callback(keys);
+        if (!isOk)
+            return false;
+        return keys.every((key) => jsonSearch(json[key], callback));
+    }
+    else if (Array.isArray(json)) {
+        return json.every((subJson) => jsonSearch(subJson, callback));
+    }
+    return true;
+}
+exports.jsonSearch = jsonSearch;
+
+
+/***/ }),
+
+/***/ 746:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.isObject = void 0;
+/**
+ * Check whether the object is a typescript object
+ *
+ * @param object
+ * @returns
+ */
+function isObject(object) {
+    return !!object && typeof object === 'object' && object.constructor === Object;
+}
+exports.isObject = isObject;
 
 
 /***/ }),
