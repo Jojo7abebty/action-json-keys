@@ -20,10 +20,10 @@ async function main() {
         console.log(`::error::${result.file} is not a json.`);
       }
       if (!result.ordered) {
-        console.error(`::error::${result.file} is not ordered.`);
+        console.error(`::error::${result.file} keys are not in ${actionOptions.order.orderText} order.`);
       }
       if (!result.correctCase) {
-        console.error(`::error::${result.file} keys are not all in snake case.`);
+        console.error(`::error::${result.file} keys are not in ${actionOptions.keyFormat.formatName} format.`);
       }
     }
 

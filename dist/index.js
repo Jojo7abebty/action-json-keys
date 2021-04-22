@@ -3802,6 +3802,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.KeyFormatMatcher = void 0;
 class KeyFormatMatcher {
     constructor(input) {
+        this.formatName = input;
         switch (input) {
             case 'snake_case':
                 this.regExp = KeyFormatMatcher.snakeCase;
@@ -3816,6 +3817,7 @@ class KeyFormatMatcher {
                 this.regExp = KeyFormatMatcher.kebabCase;
             default:
                 this.regExp = new RegExp(input);
+                this.formatName = `"/${input}/g"`;
                 break;
         }
     }
@@ -3905,10 +3907,10 @@ function main() {
                     console.log(`::error::${result.file} is not a json.`);
                 }
                 if (!result.ordered) {
-                    console.error(`::error::${result.file} is not ordered.`);
+                    console.error(`::error::${result.file} keys are not in ${ActionOptions_1.actionOptions.order.orderText} order.`);
                 }
                 if (!result.correctCase) {
-                    console.error(`::error::${result.file} keys are not all in snake case.`);
+                    console.error(`::error::${result.file} keys are not in ${ActionOptions_1.actionOptions.keyFormat.formatName} format.`);
                 }
             }
         }
@@ -3954,9 +3956,11 @@ class OrderChecker {
     constructor(input) {
         if (input === 'asc') {
             this.checker = OrderChecker.asc;
+            this.orderText = 'ascending';
         }
         else {
             this.checker = OrderChecker.desc;
+            this.orderText = 'descending';
         }
     }
     static asc(key1, key2) {

@@ -1,6 +1,8 @@
 export class KeyFormatMatcher {
   private readonly regExp: RegExp
+  public readonly formatName: string;
   constructor(input: string) {
+    this.formatName = input;
     switch (input) {
       case 'snake_case':
         this.regExp = KeyFormatMatcher.snakeCase;
@@ -15,6 +17,7 @@ export class KeyFormatMatcher {
         this.regExp = KeyFormatMatcher.kebabCase;
       default:
         this.regExp = new RegExp(input);
+        this.formatName = `"/${input}/g"`;
         break;
     }
   }
