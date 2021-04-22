@@ -15,6 +15,7 @@ export class KeyFormatMatcher {
         break;
       case 'kebab-case':
         this.regExp = KeyFormatMatcher.kebabCase;
+        break;
       default:
         this.regExp = new RegExp(input);
         this.formatName = `"/${input}/g"`;
