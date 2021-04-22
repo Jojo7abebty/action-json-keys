@@ -11,3 +11,4 @@ jobs:
       uses: ValentinVignal/action-json-keys@v0.3
       with:
         file-matcher: 'json/**/*.json'
+        key-format: 'camelCase'
