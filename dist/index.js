@@ -3817,14 +3817,18 @@ class KeyFormatMatcher {
                 this.regExp = KeyFormatMatcher.kebabCase;
                 break;
             default:
-                this.regExp = new RegExp(input);
+                this.regExp = new RegExp(input, 'g');
                 this.formatName = `"/${input}/g"`;
                 break;
         }
     }
     isCorrectCase(key) {
         var _a;
-        return ((_a = key.match(this.regExp)) === null || _a === void 0 ? void 0 : _a.length) === 1;
+        const ok = ((_a = key.match(this.regExp)) === null || _a === void 0 ? void 0 : _a.length) === 1;
+        if (!ok) {
+            console.log(`Bad key: "${key}"`);
+        }
+        return ok;
     }
 }
 exports.KeyFormatMatcher = KeyFormatMatcher;

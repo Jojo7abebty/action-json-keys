@@ -17,7 +17,7 @@ export class KeyFormatMatcher {
         this.regExp = KeyFormatMatcher.kebabCase;
         break;
       default:
-        this.regExp = new RegExp(input);
+        this.regExp = new RegExp(input, 'g');
         this.formatName = `"/${input}/g"`;
         break;
     }
@@ -29,6 +29,10 @@ export class KeyFormatMatcher {
   private static kebabCase = /^([a-z0-9-])*$/g;
 
   public isCorrectCase(key: string): boolean {
-    return key.match(this.regExp)?.length === 1;
+    const ok = key.match(this.regExp)?.length === 1;
+    if (!ok) {
+      console.log(`Bad key: "${key}"`);
+    }
+    return ok;
   }
 }
