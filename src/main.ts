@@ -19,11 +19,13 @@ async function main() {
       if (!result.json) {
         console.log(`::error::${result.file} is not a json.`);
       }
-      if (!result.ordered) {
-        console.error(`::error::${result.file} keys are not in ${actionOptions.order.orderText} order.`);
+      if (!result.order.success) {''
+        const badKeys = result.order.keyCouples.map(([key1, key2]) => `("${key1}, "${key2}")`).join(', ');
+        console.error(`::error::${result.file} keys are not in ${actionOptions.order.orderText} order (${badKeys}).`);
       }
-      if (!result.correctCase) {
-        console.error(`::error::${result.file} keys are not in ${actionOptions.keyFormat.formatName} format.`);
+      if (!result.format.success) {
+        const badKeys = `"${result.format.keys.join('", "')}"`;
+        console.error(`::error::${result.file} keys are not in ${actionOptions.keyFormat.formatName} format (${badKeys}).`);
       }
     }
 
@@ -52,10 +54,10 @@ function checkJson(filePath: string): Result {
   if (!isObject(json))  {
     return new Result({file: filePath, json: false});
   }
-  const ordered = isOrdered(json);
-  const correctCase = isCorrectCase(json);
+  const orderResult = isOrdered(json);
+  const formatResult = isCorrectCase(json);
 
-  return new Result({file: filePath, ordered: ordered, correctCase: correctCase});
+  return new Result({file: filePath, order: orderResult, format: formatResult});
 }
 
 main();

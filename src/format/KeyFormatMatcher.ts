@@ -1,3 +1,5 @@
+import { FormatResult } from "./FormatResult";
+
 export class KeyFormatMatcher {
   private readonly regExp: RegExp
   public readonly formatName: string;
@@ -28,11 +30,10 @@ export class KeyFormatMatcher {
   private static pascalCase = /^([A-Z0-9])([a-zA-Z0-9])*$/g;
   private static kebabCase = /^([a-z0-9-])*$/g;
 
-  public isCorrectCase(key: string): boolean {
+  public isCorrectCase(key: string, acc: FormatResult): void{
     const ok = key.match(this.regExp)?.length === 1;
     if (!ok) {
-      console.log(`Bad key: "${key}"`);
+      acc.push(key);
     }
-    return ok;
   }
 }

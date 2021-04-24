@@ -3770,25 +3770,50 @@ function wrappy (fn, cb) {
 /***/ }),
 
 /***/ 481:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Result = void 0;
+const FormatResult_1 = __nccwpck_require__(769);
+const OrderResult_1 = __nccwpck_require__(839);
 class Result {
     constructor(params) {
         var _a, _b, _c;
         this.file = params.file;
-        this.ordered = (_a = params.ordered) !== null && _a !== void 0 ? _a : true;
+        this.order = (_a = params.order) !== null && _a !== void 0 ? _a : new OrderResult_1.OrderResult();
         this.json = (_b = params.json) !== null && _b !== void 0 ? _b : true;
-        this.correctCase = (_c = params.correctCase) !== null && _c !== void 0 ? _c : true;
+        this.format = (_c = params.format) !== null && _c !== void 0 ? _c : new FormatResult_1.FormatResult();
     }
     get success() {
-        return this.ordered && this.json && this.correctCase;
+        return this.order.success && this.json && this.format.success;
     }
 }
 exports.Result = Result;
+
+
+/***/ }),
+
+/***/ 769:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FormatResult = void 0;
+class FormatResult {
+    constructor() {
+        this.keys = [];
+    }
+    push(key) {
+        this.keys.push(key);
+    }
+    get success() {
+        return !this.keys.length;
+    }
+}
+exports.FormatResult = FormatResult;
 
 
 /***/ }),
@@ -3822,13 +3847,12 @@ class KeyFormatMatcher {
                 break;
         }
     }
-    isCorrectCase(key) {
+    isCorrectCase(key, acc) {
         var _a;
         const ok = ((_a = key.match(this.regExp)) === null || _a === void 0 ? void 0 : _a.length) === 1;
         if (!ok) {
-            console.log(`Bad key: "${key}"`);
+            acc.push(key);
         }
-        return ok;
     }
 }
 exports.KeyFormatMatcher = KeyFormatMatcher;
@@ -3849,8 +3873,17 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.isCorrectCase = void 0;
 const ActionOptions_1 = __nccwpck_require__(813);
 const jsonSearch_1 = __nccwpck_require__(453);
+const FormatResult_1 = __nccwpck_require__(769);
+/**
+ * Check that the keys are in the correct format
+ *
+ * @param object
+ * @returns
+ */
 function isCorrectCase(object) {
-    return jsonSearch_1.jsonSearch(object, (keys) => keys.every((key) => ActionOptions_1.actionOptions.keyFormat.isCorrectCase(key)));
+    const badFormatAccumulator = new FormatResult_1.FormatResult();
+    jsonSearch_1.jsonSearch(object, (keys) => keys.forEach((key) => ActionOptions_1.actionOptions.keyFormat.isCorrectCase(key, badFormatAccumulator)));
+    return badFormatAccumulator;
 }
 exports.isCorrectCase = isCorrectCase;
 
@@ -3911,11 +3944,14 @@ function main() {
                 if (!result.json) {
                     console.log(`::error::${result.file} is not a json.`);
                 }
-                if (!result.ordered) {
-                    console.error(`::error::${result.file} keys are not in ${ActionOptions_1.actionOptions.order.orderText} order.`);
+                if (!result.order.success) {
+                    '';
+                    const badKeys = result.order.keyCouples.map(([key1, key2]) => `("${key1}, "${key2}")`).join(', ');
+                    console.error(`::error::${result.file} keys are not in ${ActionOptions_1.actionOptions.order.orderText} order (${badKeys}).`);
                 }
-                if (!result.correctCase) {
-                    console.error(`::error::${result.file} keys are not in ${ActionOptions_1.actionOptions.keyFormat.formatName} format.`);
+                if (!result.format.success) {
+                    const badKeys = `"${result.format.keys.join('", "')}"`;
+                    console.error(`::error::${result.file} keys are not in ${ActionOptions_1.actionOptions.keyFormat.formatName} format (${badKeys}).`);
                 }
             }
         }
@@ -3944,9 +3980,9 @@ function checkJson(filePath) {
     if (!utils_1.isObject(json)) {
         return new Result_1.Result({ file: filePath, json: false });
     }
-    const ordered = order_1.isOrdered(json);
-    const correctCase = format_1.isCorrectCase(json);
-    return new Result_1.Result({ file: filePath, ordered: ordered, correctCase: correctCase });
+    const orderResult = order_1.isOrdered(json);
+    const formatResult = format_1.isCorrectCase(json);
+    return new Result_1.Result({ file: filePath, order: orderResult, format: formatResult });
 }
 main();
 
@@ -3983,6 +4019,29 @@ exports.OrderChecker = OrderChecker;
 
 /***/ }),
 
+/***/ 839:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OrderResult = void 0;
+class OrderResult {
+    constructor() {
+        this.keyCouples = [];
+    }
+    push(key1, key2) {
+        this.keyCouples.push([key1, key2]);
+    }
+    get success() {
+        return !this.keyCouples.length;
+    }
+}
+exports.OrderResult = OrderResult;
+
+
+/***/ }),
+
 /***/ 927:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -3992,20 +4051,24 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.isOrdered = void 0;
 const ActionOptions_1 = __nccwpck_require__(813);
 const jsonSearch_1 = __nccwpck_require__(453);
+const OrderResult_1 = __nccwpck_require__(839);
 /**
  * Whether the object has its keys ordered in alphabetical order
  * @param object
  * @returns
  */
 function isOrdered(object) {
-    return jsonSearch_1.jsonSearch(object, (keys) => {
+    const orderResult = new OrderResult_1.OrderResult();
+    jsonSearch_1.jsonSearch(object, (keys) => {
         for (let index = 0; index < keys.length - 1; index++) {
-            if (!ActionOptions_1.actionOptions.order.checker(keys[index], keys[index + 1])) {
-                return false;
+            const key1 = keys[index];
+            const key2 = keys[index + 1];
+            if (!ActionOptions_1.actionOptions.order.checker(key1, key2)) {
+                orderResult.push(key1, key2);
             }
         }
-        return true;
     });
+    return orderResult;
 }
 exports.isOrdered = isOrdered;
 
@@ -4064,15 +4127,12 @@ const utils_1 = __nccwpck_require__(746);
 function jsonSearch(json, callback) {
     if (utils_1.isObject(json)) {
         const keys = Object.keys(json);
-        const isOk = callback(keys);
-        if (!isOk)
-            return false;
-        return keys.every((key) => jsonSearch(json[key], callback));
+        callback(keys);
+        keys.forEach((key) => jsonSearch(json[key], callback));
     }
     else if (Array.isArray(json)) {
-        return json.every((subJson) => jsonSearch(subJson, callback));
+        return json.forEach((subJson) => jsonSearch(subJson, callback));
     }
-    return true;
 }
 exports.jsonSearch = jsonSearch;
 
