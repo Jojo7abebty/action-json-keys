@@ -3923,6 +3923,9 @@ function main() {
         if (!success) {
             core.setFailed('Some json files are not properly formatted, see logs above for more information.');
         }
+        else {
+            console.log('The action found no issue.');
+        }
     });
 }
 /**
