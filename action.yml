@@ -2,8 +2,8 @@ name: 'JSON Keys'
 description: 'A GitHub action to check keys of json files'
 author: 'Valentin Vignal'
 branding:
-  icon: 'check-circle'
-  color: 'gray-dark'
+  icon: 'file-text'
+  color: 'purple'
 inputs:
   file-matcher:
     description: 'Minimatch expression of the json files to check.'
