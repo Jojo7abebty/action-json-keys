@@ -1,5 +1,6 @@
-import { FormatResult } from "./FormatResult";
-
+/**
+ * Object to check the keys format from the Github action option
+ */
 export class KeyFormatMatcher {
   private readonly regExp: RegExp
   public readonly formatName: string;
@@ -30,10 +31,13 @@ export class KeyFormatMatcher {
   private static pascalCase = /^([A-Z0-9])([a-zA-Z0-9])*$/g;
   private static kebabCase = /^([a-z0-9-])*$/g;
 
-  public isCorrectCase(key: string, acc: FormatResult): void{
-    const ok = key.match(this.regExp)?.length === 1;
-    if (!ok) {
-      acc.push(key);
-    }
+  /**
+   * Method to check wether a key is in a correct format
+   * 
+   * @param key 
+   * @param acc 
+   */
+  public isCorrectCase(key: string): boolean{
+    return key.match(this.regExp)?.length === 1;
   }
 }

@@ -1,6 +1,9 @@
 import { FormatResult } from "./format/FormatResult";
 import { OrderResult } from "./order/OrderResult";
 
+/**
+ * Result of the analysis
+ */
 export class Result {
   public readonly file: string;
   public readonly order: OrderResult;
@@ -18,6 +21,9 @@ export class Result {
     this.format = params.format ?? new FormatResult();
   }
 
+  /**
+   * Whether the analysis passed
+   */
   public get success(): boolean {
     return this.order.success && this.json && this.format.success;
   }

@@ -3778,6 +3778,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Result = void 0;
 const FormatResult_1 = __nccwpck_require__(769);
 const OrderResult_1 = __nccwpck_require__(839);
+/**
+ * Result of the analysis
+ */
 class Result {
     constructor(params) {
         var _a, _b, _c;
@@ -3786,6 +3789,9 @@ class Result {
         this.json = (_b = params.json) !== null && _b !== void 0 ? _b : true;
         this.format = (_c = params.format) !== null && _c !== void 0 ? _c : new FormatResult_1.FormatResult();
     }
+    /**
+     * Whether the analysis passed
+     */
     get success() {
         return this.order.success && this.json && this.format.success;
     }
@@ -3802,13 +3808,24 @@ exports.Result = Result;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FormatResult = void 0;
+/**
+ * Contains the result on the format of the keys
+ */
 class FormatResult {
     constructor() {
         this.keys = [];
     }
+    /**
+     * Add a bad formatted key
+     *
+     * @param key
+     */
     push(key) {
         this.keys.push(key);
     }
+    /**
+     * Wether the check passed
+     */
     get success() {
         return !this.keys.length;
     }
@@ -3825,6 +3842,9 @@ exports.FormatResult = FormatResult;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.KeyFormatMatcher = void 0;
+/**
+ * Object to check the keys format from the Github action option
+ */
 class KeyFormatMatcher {
     constructor(input) {
         this.formatName = input;
@@ -3847,12 +3867,15 @@ class KeyFormatMatcher {
                 break;
         }
     }
-    isCorrectCase(key, acc) {
+    /**
+     * Method to check wether a key is in a correct format
+     *
+     * @param key
+     * @param acc
+     */
+    isCorrectCase(key) {
         var _a;
-        const ok = ((_a = key.match(this.regExp)) === null || _a === void 0 ? void 0 : _a.length) === 1;
-        if (!ok) {
-            acc.push(key);
-        }
+        return ((_a = key.match(this.regExp)) === null || _a === void 0 ? void 0 : _a.length) === 1;
     }
 }
 exports.KeyFormatMatcher = KeyFormatMatcher;
@@ -3882,7 +3905,11 @@ const FormatResult_1 = __nccwpck_require__(769);
  */
 function isCorrectCase(object) {
     const badFormatAccumulator = new FormatResult_1.FormatResult();
-    jsonSearch_1.jsonSearch(object, (keys) => keys.forEach((key) => ActionOptions_1.actionOptions.keyFormat.isCorrectCase(key, badFormatAccumulator)));
+    jsonSearch_1.jsonSearch(object, (keys) => keys.forEach((key) => {
+        if (!ActionOptions_1.actionOptions.keyFormat.isCorrectCase(key)) {
+            badFormatAccumulator.push(key);
+        }
+    }));
     return badFormatAccumulator;
 }
 exports.isCorrectCase = isCorrectCase;
@@ -3932,6 +3959,9 @@ const Result_1 = __nccwpck_require__(481);
 const utils_1 = __nccwpck_require__(746);
 const format_1 = __nccwpck_require__(568);
 const order_1 = __nccwpck_require__(927);
+/**
+ * Main function
+ */
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const files = glob.sync(ActionOptions_1.actionOptions.fileMatcher);
@@ -3996,6 +4026,9 @@ main();
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrderChecker = void 0;
+/**
+ * Object to check the key order from the github action option
+ */
 class OrderChecker {
     constructor(input) {
         if (input === 'asc') {
@@ -4007,9 +4040,23 @@ class OrderChecker {
             this.orderText = 'descending';
         }
     }
+    /**
+     * Ascending check
+     *
+     * @param key1
+     * @param key2
+     * @returns
+     */
     static asc(key1, key2) {
         return key1 <= key2;
     }
+    /**
+     * Descending check
+     *
+     * @param key1
+     * @param key2
+     * @returns
+     */
     static desc(key1, key2) {
         return key1 >= key2;
     }
@@ -4026,13 +4073,25 @@ exports.OrderChecker = OrderChecker;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrderResult = void 0;
+/**
+ * Contains the results of the check on the key order
+ */
 class OrderResult {
     constructor() {
         this.keyCouples = [];
     }
+    /**
+     * Add a couple of unordered keys
+     *
+     * @param key1
+     * @param key2
+     */
     push(key1, key2) {
         this.keyCouples.push([key1, key2]);
     }
+    /**
+     * Whether the check passed
+     */
     get success() {
         return !this.keyCouples.length;
     }
@@ -4104,6 +4163,9 @@ exports.actionOptions = void 0;
 const core = __importStar(__nccwpck_require__(752));
 const KeyFormatMatcher_1 = __nccwpck_require__(819);
 const OrderChecker_1 = __nccwpck_require__(1);
+/**
+ * Options of the Github action
+ */
 class ActionOptions {
     constructor() {
         this.fileMatcher = core.getInput('file-matcher', { required: true });
@@ -4111,6 +4173,9 @@ class ActionOptions {
         this.keyFormat = new KeyFormatMatcher_1.KeyFormatMatcher(core.getInput('key-format', { required: true }));
     }
 }
+/**
+ * Instance of the options of the Github action
+ */
 exports.actionOptions = new ActionOptions();
 
 
@@ -4124,6 +4189,13 @@ exports.actionOptions = new ActionOptions();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.jsonSearch = void 0;
 const utils_1 = __nccwpck_require__(746);
+/**
+ * Perform a search on a JSON object
+ *
+ * @param json
+ * @param callback Callback function called with the least of keys of the JSON object
+ * @returns
+ */
 function jsonSearch(json, callback) {
     if (utils_1.isObject(json)) {
         const keys = Object.keys(json);

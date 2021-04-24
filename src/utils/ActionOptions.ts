@@ -2,6 +2,9 @@ import * as core from '@actions/core';
 import { KeyFormatMatcher } from '../format/KeyFormatMatcher';
 import { OrderChecker, OrderOptions } from '../order/OrderChecker';
 
+/**
+ * Options of the Github action
+ */
 class ActionOptions {
   public readonly fileMatcher: string;
   public readonly order: OrderChecker;
@@ -13,4 +16,7 @@ class ActionOptions {
   }
 }
 
+/**
+ * Instance of the options of the Github action
+ */
 export const actionOptions = new ActionOptions();

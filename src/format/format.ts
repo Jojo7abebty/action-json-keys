@@ -12,7 +12,11 @@ export function isCorrectCase(object: Json): FormatResult {
   const badFormatAccumulator = new FormatResult();
   jsonSearch(
     object,
-    (keys) => keys.forEach((key) => actionOptions.keyFormat.isCorrectCase(key, badFormatAccumulator)),
+    (keys) => keys.forEach((key) => {
+      if (!actionOptions.keyFormat.isCorrectCase(key)) {
+        badFormatAccumulator.push(key);
+      }
+    })
   );
   return badFormatAccumulator;
 }

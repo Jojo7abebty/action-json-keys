@@ -7,6 +7,9 @@ import { isObject } from './utils/utils';
 import { isCorrectCase } from './format/format';
 import { isOrdered } from './order/order';
 
+/**
+ * Main function
+ */
 async function main() {
   const files = glob.sync(actionOptions.fileMatcher);
   console.log('::group:: Checking json files...');
