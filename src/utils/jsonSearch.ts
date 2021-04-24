@@ -2,16 +2,21 @@ import { isObject } from "./utils";
 
 export type Json = {[keys: string]: any};
 
-type JsonSearchCallback = (keys: string[]) => boolean;
+type JsonSearchCallback = (keys: string[]) => void;
 
-export function jsonSearch(json: any, callback: JsonSearchCallback): boolean {
+/**
+ * Perform a search on a JSON object
+ * 
+ * @param json 
+ * @param callback Callback function called with the least of keys of the JSON object
+ * @returns 
+ */
+export function jsonSearch(json: any, callback: JsonSearchCallback): void {
   if (isObject(json)) {
     const keys = Object.keys(json);
-    const isOk = callback(keys);
-    if (!isOk) return false;
-    return keys.every((key) => jsonSearch(json[key], callback),);
+    callback(keys);
+    keys.forEach((key) => jsonSearch(json[key], callback),);
   } else if (Array.isArray(json)) {
-    return (json as []).every((subJson) => jsonSearch(subJson, callback));
+    return (json as []).forEach((subJson) => jsonSearch(subJson, callback));
   }
-  return true;
 }

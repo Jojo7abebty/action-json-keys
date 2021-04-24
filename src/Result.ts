@@ -1,22 +1,32 @@
+import { FormatResult } from "./format/FormatResult";
+import { OrderResult } from "./order/OrderResult";
 
+/**
+ * Result of the analysis
+ */
 export class Result {
   public readonly file: string;
-  public readonly ordered: boolean;
+  public readonly order: OrderResult;
   public readonly json: boolean;
-  public readonly correctCase: boolean;
+  public readonly format: FormatResult;
   constructor(params: {
     file: string,
-    ordered?: boolean,
+    order?: OrderResult,
     json?: boolean,
-    correctCase?: boolean,
+    format?: FormatResult,
   }) {
     this.file = params.file;
-    this.ordered = params.ordered ?? true;
+    this.order = params.order ?? new OrderResult();
     this.json = params.json ?? true;
-    this.correctCase = params.correctCase ?? true;
+    this.format = params.format ?? new FormatResult();
   }
 
+  /**
+   * Whether the analysis passed
+   */
   public get success(): boolean {
-    return this.ordered && this.json && this.correctCase;
+    return this.order.success && this.json && this.format.success;
   }
+
+  
 }
