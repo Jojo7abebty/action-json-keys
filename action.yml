@@ -15,7 +15,7 @@ inputs:
     required: false
   key-format:
     description: 'Format of the keys. Options: `snake_case`, `camelCase`, `PascalCase`, `kebab-case` or custom regexp. Default: `snake_case`.'
-    default: 'snake_case'
+    default: 'camelCase'
     required: false
 
 
