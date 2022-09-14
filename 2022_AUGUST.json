@@ -1,0 +1,47 @@
+{
+  "timelineObjects": [{
+    "placeVisit": {
+      "location": {
+        "placeId": "ChIJeYk2JX5AWBQRaL2qe3TEhgY",
+        "address": "قسم الشرابية، محافظة القاهرة‬، مصر",
+        "name": "Ash Sharabayah",
+        "locationConfidence": 100.0,
+        "calibratedProbability": 100.0
+      },
+      "duration": {
+        "startTimestamp": "2022-08-26T00:00:00Z",
+        "endTimestamp": "2022-08-26T17:34:23Z"
+      },
+      "placeConfidence": "USER_CONFIRMED",
+      "visitConfidence": 100,
+      "editConfirmationStatus": "CONFIRMED",
+      "locationConfidence": 100,
+      "placeVisitType": "SINGLE_PLACE",
+      "locationAssertionType": "AREA",
+      "lastEditedTimestamp": "2022-08-26T17:37:25.301Z",
+      "placeVisitImportance": "MAIN",
+      "editActionMetadata": {
+        "editHistory": {
+          "editEvent": [{
+            "editOperation": ["CREATE"]
+          }, {
+            "editOperation": ["MODIFY_UNCHANGED"],
+            "uiConfiguration": {
+              "uiPlaceVisitConfiguration": "DEFAULT_PLACE_VISIT_CONFIGURATION"
+            }
+          }, {
+            "editOperation": ["MODIFY_LOCATION"],
+            "uiConfiguration": {
+              "uiPlaceVisitConfiguration": "DEFAULT_PLACE_VISIT_CONFIGURATION"
+            }
+          }, {
+            "editOperation": ["MODIFY_UNCHANGED"],
+            "uiConfiguration": {
+              "uiPlaceVisitConfiguration": "DEFAULT_PLACE_VISIT_CONFIGURATION"
+            }
+          }]
+        }
+      }
+    }
+  }]
+}
